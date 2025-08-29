@@ -25,9 +25,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Add this line for form data
 app.use(
   cors({
-    origin: "http://localhost:3000",
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], // Add supported methods
-    credentials: true, // Enable credentials
+    // origin: "http://localhost:3000",
+    // methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], // Add supported methods
+    // credentials: true, // Enable credentials
+    origin: process.env.NODE_ENV === 'production' 
+      ? "https://okuselu.github.io" 
+      : "http://localhost:3000",
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    credentials: true,
   })
 );
 
