@@ -9,6 +9,7 @@ import shipmentRoutes from './routes/shipment.routes';
 import orderItemRoutes from './routes/orderItem.routes';
 import cartRoutes from './routes/cart.routes';
 import categoryRoutes from './routes/category.routes';
+import newsletterRoutes from './routes/newsletter.routes';
 
 import connectDB from "./config/db.config";
 import errorHandler from "./middleware/error.middleware";
@@ -25,10 +26,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Add this line for form data
 app.use(
   cors({
-    // Allow both localhost for development and GitHub Pages for production
     origin: [
       "http://localhost:3000",
-      "https://okuselu.github.io"
+      "https://okuselu.github.io",
+      "https://okuselu.github.io/biscenic-client"
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true,
@@ -63,3 +64,6 @@ process.on("unhandledRejection", (err: any) => {
   console.error(colors.red.bold(`Error: ${err.message}`));
   server.close(() => process.exit(1));
 });
+
+// Add this line with other route registrations
+app.use('/api/newsletter', newsletterRoutes);
