@@ -39,6 +39,22 @@ app.use(
 // Serve uploaded files statically
 app.use('/uploads', express.static('uploads'));
 
+// Add root route handler
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Biscenic API Server is running! 🚀',
+    status: 'healthy',
+    endpoints: {
+      products: '/api/products',
+      categories: '/api/categories',
+      cart: '/api/carts',
+      users: '/api/users',
+      orders: '/api/orders',
+      newsletter: '/api/newsletter'
+    }
+  });
+});
+
 app.use('/api/categories', categoryRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/payments', paymentRoutes);
@@ -48,6 +64,7 @@ app.use('/api/carts', cartRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/addresses', addressRoutes);
+app.use('/api/newsletter', newsletterRoutes); // Move this here from line 69
 
 app.use(errorHandler);
 const PORT = process.env.PORT || 5050; 
@@ -64,6 +81,3 @@ process.on("unhandledRejection", (err: any) => {
   console.error(colors.red.bold(`Error: ${err.message}`));
   server.close(() => process.exit(1));
 });
-
-// Add this line with other route registrations
-app.use('/api/newsletter', newsletterRoutes);
