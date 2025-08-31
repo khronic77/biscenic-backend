@@ -10,7 +10,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     
-    # Fix permissions for peaceiris/actions-gh-pages
+    # Fix permissions for peaceiris/actions-gh-pages //just to trigger redeployemnt
     permissions:
       contents: write
       pages: write
