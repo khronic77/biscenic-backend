@@ -1,0 +1,3 @@
+[submodule "biscenic-client"]
+	path = biscenic-client
+	url = https://github.com/Okuselu/biscenic-client.git
