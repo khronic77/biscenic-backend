@@ -25,7 +25,7 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 100 * 1024 * 1024, // 100MB for videos
+    fileSize: 15 * 1024 * 1024, 
   },
   fileFilter: (req, file, cb) => {
     console.log("Multer receiving file:", {
@@ -35,26 +35,21 @@ const upload = multer({
       size: file.size
     });
 
-    // Allow both images and videos
-    const allowedImageTypes = /jpeg|jpg|png|webp/;
-    const allowedVideoTypes = /mp4|avi|mov|wmv|flv|webm/;
-    
-    const isImage = allowedImageTypes.test(file.mimetype) || 
-                   allowedImageTypes.test(path.extname(file.originalname).toLowerCase());
-    const isVideo = allowedVideoTypes.test(file.mimetype) || 
-                   allowedVideoTypes.test(path.extname(file.originalname).toLowerCase());
+    const allowedTypes = /jpeg|jpg|png|webp/;
+    const mimetype = allowedTypes.test(file.mimetype);
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
 
-    if (isImage || isVideo) {
+    if (mimetype && extname) {
       return cb(null, true);
     }
-    cb(new Error("Only image files (jpeg, jpg, png, webp) and video files (mp4, avi, mov, wmv, flv, webm) are allowed!"));
+    cb(new Error("Only image files (jpeg, jpg, png, webp) are allowed!"));
   }
 });
 
 export const uploadMiddleware = (req: any, res: any, next: any) => {
   console.log("Incoming request headers:", req.headers);
 
-  const uploadArray = upload.array("images", 10); // Increased limit for videos
+  const uploadArray = upload.array("images", 5);
 
   uploadArray(req, res, function (err) {
     console.log("Form data received:", req.body);
