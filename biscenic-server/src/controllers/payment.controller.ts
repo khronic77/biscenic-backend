@@ -9,9 +9,9 @@ export const initiatePayment = async (req: Request, res: Response, next: NextFun
         return;
     }
     try {
-        const paystackSectretKey = process.env.PAYSTACK_SECRET_KEY;
+        const paystackSecretKey = process.env.PAYSTACK_SECRET_KEY; // Fixed typo
 
-        const response =await axios.post(
+        const response = await axios.post(
             'https://api.paystack.co/transaction/initialize',
             {
                 email,
@@ -19,7 +19,7 @@ export const initiatePayment = async (req: Request, res: Response, next: NextFun
             },
             {
                 headers: {
-                    Authorization: `Bearer ${paystackSectretKey}`,
+                    Authorization: `Bearer ${paystackSecretKey}`, // Fixed variable name
                 }
             }
         );
@@ -28,66 +28,62 @@ export const initiatePayment = async (req: Request, res: Response, next: NextFun
         const { authorization_url } = response.data.data;
 
         res.status(200).json({
-            message:"Payment initialization successful",
+            message: "Payment initialization successful",
             data: { authorization_url },
             error: null
         })
-    }catch(error: any){
+    } catch(error: any) {
         res.status(500).json({
-            message:"Failed to initialize payment",
+            message: "Failed to initialize payment",
             data: null,
-            error: error.response?.message || error.message
+            error: error.response?.data?.message || error.message // Improved error handling
         });
     }
 }
 
 export const verifyPayment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const { reference } = req.query; //request to Paystack callback
+    const { reference } = req.query;
 
     if (!reference) {
         res.status(400).json({
-            message:"Transaction reference is required", 
+            message: "Transaction reference is required", 
             data: null,
             error: true
         })
         return;
     }
     try {
-        const paystackSectretKey = process.env.PAYSTACK_SECTRET_KEY;
+        const paystackSecretKey = process.env.PAYSTACK_SECRET_KEY; // Fixed typo
 
-        const response = axios.get(
+        const response = await axios.get( // Added missing await
             `https://api.paystack.co/transaction/verify/${reference}`,
-        
-        {
-            headers: {
-                Authorization: `Bearer ${paystackSectretKey}`
+            {
+                headers: {
+                    Authorization: `Bearer ${paystackSecretKey}` // Fixed variable name
+                }
             }
+        )
+
+        const paymentData = response.data.data; // Removed unnecessary await
+        
+        if(paymentData.status === 'success') {
+            res.status(200).json({
+                message: "Payment verification successful",
+                data: paymentData,
+                error: null
+            })
+        } else {
+            res.status(400).json({
+                message: "Payment verification failed",
+                data: paymentData,
+                error: true
+            })
         }
-    )
-
-    const paymentData = (await response).data.data;
-    
-    if(paymentData.status === 'success') {
-        res.status(200).json({
-            message:"Payment verification successful",
-            data: paymentData,
-            error: null
-        })
-    }else{
-        res.status(400).json({
-            message:"Payment verification failed",
-            data: paymentData,
-            error: true
-        })
-    }
-
-
-    }catch(error: any){
+    } catch(error: any) {
         res.status(500).json({
             message: "Failed to verify payment",
             data: null,
-            error: error.response?.message || error.message
+            error: error.response?.data?.message || error.message
         })
     }
-
 }
