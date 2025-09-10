@@ -29,7 +29,8 @@ app.use((0, cors_1.default)({
     origin: [
         "http://localhost:3000",
         "https://okuselu.github.io",
-        "https://okuselu.github.io/biscenic-client"
+        "https://okuselu.github.io/biscenic-client",
+        "https://biscenic-glmi.vercel.app"
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true,

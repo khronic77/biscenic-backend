@@ -15,20 +15,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.verifyPayment = exports.initiatePayment = void 0;
 const axios_1 = __importDefault(require("axios"));
 const initiatePayment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _a, _b;
     const { email, amount } = req.body;
     if (!email || !amount) {
         res.status(400).json({ message: "Email and amount are required", data: null, error: true });
         return;
     }
     try {
-        const paystackSectretKey = process.env.PAYSTACK_SECRET_KEY;
+        const paystackSecretKey = process.env.PAYSTACK_SECRET_KEY;
         const response = yield axios_1.default.post('https://api.paystack.co/transaction/initialize', {
             email,
             amount,
         }, {
             headers: {
-                Authorization: `Bearer ${paystackSectretKey}`,
+                Authorization: `Bearer ${paystackSecretKey}`,
             }
         });
         console.log(response);
@@ -43,14 +43,14 @@ const initiatePayment = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
         res.status(500).json({
             message: "Failed to initialize payment",
             data: null,
-            error: ((_a = error.response) === null || _a === void 0 ? void 0 : _a.message) || error.message
+            error: ((_b = (_a = error.response) === null || _a === void 0 ? void 0 : _a.data) === null || _b === void 0 ? void 0 : _b.message) || error.message
         });
     }
 });
 exports.initiatePayment = initiatePayment;
 const verifyPayment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    const { reference } = req.query; //request to Paystack callback
+    var _a, _b;
+    const { reference } = req.query;
     if (!reference) {
         res.status(400).json({
             message: "Transaction reference is required",
@@ -60,13 +60,13 @@ const verifyPayment = (req, res, next) => __awaiter(void 0, void 0, void 0, func
         return;
     }
     try {
-        const paystackSectretKey = process.env.PAYSTACK_SECTRET_KEY;
-        const response = axios_1.default.get(`https://api.paystack.co/transaction/verify/${reference}`, {
+        const paystackSecretKey = process.env.PAYSTACK_SECRET_KEY;
+        const response = yield axios_1.default.get(`https://api.paystack.co/transaction/verify/${reference}`, {
             headers: {
-                Authorization: `Bearer ${paystackSectretKey}`
+                Authorization: `Bearer ${paystackSecretKey}`
             }
         });
-        const paymentData = (yield response).data.data;
+        const paymentData = response.data.data;
         if (paymentData.status === 'success') {
             res.status(200).json({
                 message: "Payment verification successful",
@@ -86,7 +86,7 @@ const verifyPayment = (req, res, next) => __awaiter(void 0, void 0, void 0, func
         res.status(500).json({
             message: "Failed to verify payment",
             data: null,
-            error: ((_a = error.response) === null || _a === void 0 ? void 0 : _a.message) || error.message
+            error: ((_b = (_a = error.response) === null || _a === void 0 ? void 0 : _a.data) === null || _b === void 0 ? void 0 : _b.message) || error.message
         });
     }
 });
