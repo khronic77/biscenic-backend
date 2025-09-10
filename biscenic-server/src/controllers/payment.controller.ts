@@ -9,7 +9,7 @@ export const initiatePayment = async (req: Request, res: Response, next: NextFun
         return;
     }
     try {
-        const paystackSecretKey = process.env.PAYSTACK_SECRET_KEY; // Fixed typo
+        const paystackSecretKey = process.env.PAYSTACK_SECRET_KEY;
 
         const response = await axios.post(
             'https://api.paystack.co/transaction/initialize',
@@ -19,7 +19,7 @@ export const initiatePayment = async (req: Request, res: Response, next: NextFun
             },
             {
                 headers: {
-                    Authorization: `Bearer ${paystackSecretKey}`, // Fixed variable name
+                    Authorization: `Bearer ${paystackSecretKey}`,
                 }
             }
         );
@@ -36,7 +36,7 @@ export const initiatePayment = async (req: Request, res: Response, next: NextFun
         res.status(500).json({
             message: "Failed to initialize payment",
             data: null,
-            error: error.response?.data?.message || error.message // Improved error handling
+            error: error.response?.data?.message || error.message
         });
     }
 }
@@ -53,18 +53,18 @@ export const verifyPayment = async (req: Request, res: Response, next: NextFunct
         return;
     }
     try {
-        const paystackSecretKey = process.env.PAYSTACK_SECRET_KEY; // Fixed typo
+        const paystackSecretKey = process.env.PAYSTACK_SECRET_KEY;
 
-        const response = await axios.get( // Added missing await
+        const response = await axios.get(
             `https://api.paystack.co/transaction/verify/${reference}`,
             {
                 headers: {
-                    Authorization: `Bearer ${paystackSecretKey}` // Fixed variable name
+                    Authorization: `Bearer ${paystackSecretKey}`
                 }
             }
         )
 
-        const paymentData = response.data.data; // Removed unnecessary await
+        const paymentData = response.data.data;
         
         if(paymentData.status === 'success') {
             res.status(200).json({
