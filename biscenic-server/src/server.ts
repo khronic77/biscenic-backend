@@ -31,7 +31,8 @@ app.use(
       "https://okuselu.github.io",
       "https://okuselu.github.io/biscenic-client",
       "https://biscenic-glmi.vercel.app",
-      "https://biscenic.com"
+      "https://biscenic.com",
+      "https://www.biscenic.com"
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true,
