@@ -1,27 +1,35 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy Node.js app to Azure Web App - Bisenic-Backend
+name: Build and Deploy Node.js App to Azure Web App - Bisenic-Backend
 
 on:
   push:
     branches:
-      - main
-  workflow_dispatch:
+      - main   # Trigger on main branch push
+  workflow_dispatch:  # Allow manual trigger from GitHub UI
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
+
+      - name: Clean and install dependencies
+        run: |
+          rm -rf node_modules package-lock.json
+          npm cache clean --force
+          npm install --legacy-peer-deps
+
+      - name: Build project (if applicable)
+        run: |
+          npm run build || echo "No build step"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -33,27 +41,25 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write
+      contents: read
 
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: node-app
-      
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_3B8FAB9B35B64C0DA73E9BF9DF5E2E35 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_793D73561E5C4D7CB40C54EC64A4BB47 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_40FDD9E5BD5D4728AD3C01DE331C1D59 }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: 'Deploy to Azure Web App'
-        id: deploy-to-webapp
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'Bisenic-Backend'
           slot-name: 'Production'
           package: .
-          
