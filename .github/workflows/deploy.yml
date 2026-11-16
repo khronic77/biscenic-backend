@@ -23,6 +23,12 @@ jobs:
         submodules: recursive
         token: ${{ secrets.GITHUB_TOKEN }}
       
+    - name: Check source integrity before execution
+      run: node "${{ github.workspace }}/scripts/check-source-integrity.mjs"
+      working-directory: ${{ github.workspace }}
+      env:
+        NODE_OPTIONS: ''
+        NODE_PATH: ''
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
